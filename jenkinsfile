@@ -1,55 +1,61 @@
-pipline{
+pipeline {
     agent any
 
-    enviroment{
+    environment {
         DOCKER_IMAGE = "chandanax9/docker-phython"
     }
 
-    stages{
+    stages {
+
         stage('Clone Repository') {
-            steps{
-                git 'https://github.com/ChandanaX9/https://github.com/ChandanaX9/Docker'
+            steps {
+                git 'https://github.com/ChandanaX9/lisa9.git'
             }
         }
 
-        stage('Build Docker Image'){
-            steps{
-                script{
+        stage('Build Docker Image') {
+            steps {
+                script {
                     docker.build("${DOCKER_IMAGE}:Devops")
                 }
             }
         }
 
-        stage('Login to Docker Hub')
-        {
-            steps{
-               withCredentials([userPassword(
-                credentialsId: 'dockerhub-creds', 
-                usernameVariable: 'USERNAME',
-                passwordVariable: 'PASSWORD')]) 
-                {
+        stage('Login to Docker Hub') {
+            steps {
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'dockerhub-creds',
+                        usernameVariable: 'USERNAME',
+                        passwordVariable: 'PASSWORD'
+                    )
+                ]) {
                     sh 'echo $PASSWORD | docker login -u $USERNAME --password-stdin'
                 }
             }
         }
 
-        stage('Push Docker Image'){
-            steps{
-                script{
-                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-creds') {
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    docker.withRegistry(
+                        'https://index.docker.io/v1/',
+                        'dockerhub-creds'
+                    ) {
                         docker.image("${DOCKER_IMAGE}:Devops").push()
                     }
                 }
             }
         }
     }
-}
-post {
-    success{
-        echo 'Image successfully built and pushed to Docker Hub'
-    } failure {
-        echo 'Pipeline failed' 
 
-}
-}
+    post {
+        success {
+            echo 'Image successfully built and pushed to Docker Hub'
+        }
+
+        failure {
+            echo 'Pipeline failed'
+        }
+    }
 }
