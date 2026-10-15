@@ -3,7 +3,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "ChandanaX9/docker-python"
+        DOCKER_IMAGE = "chandanax9/docker-python"
     }
 
     stages {
@@ -28,7 +28,7 @@ pipeline {
                 )]) {
                     bat '''
                         @echo off
-                        echo %DOCKER_PAT%|docker login -u ChandanaX9 --password-stdin
+                        echo %DOCKER_PAT%| docker login -u chandanax9 --password-stdin
                         if errorlevel 1 exit /b 1
                     '''
                 }
